@@ -2,13 +2,15 @@
 
 *Simha Teja, 31 October 2026*
 
-The code, one result file for every run, and all the charts are in this repository. For the full detail, my lab notebook is `NOTES.md`, where I wrote down every number, every failure and every decision I made.
+**GitHub repository:** <https://github.com/Simhateja17/inat-taxonomy-cnn>
+
+The code, one result file for every run, and all the charts are in this repository. For the full detail, my lab notebook is [`NOTES.md`](https://github.com/Simhateja17/inat-taxonomy-cnn/blob/main/NOTES.md), where I wrote down every number, every failure and every decision I made.
 
 ## Contents
 
-1. [Question, conditions and metrics](#1-question-conditions-and-metrics)
-2. [Experiments at a glance](#2-experiments-at-a-glance)
-3. [Data and setup](#3-data-and-setup)
+1. [The dataset: iNaturalist 2021 mini](#1-the-dataset-inaturalist-2021-mini)
+2. [Question, conditions and metrics](#2-question-conditions-and-metrics)
+3. [Model and training](#3-model-and-training)
 4. [Getting a working baseline](#4-getting-a-working-baseline)
 5. [The two conditions on 200 species](#5-the-two-conditions-on-200-species)
 6. [Controls: is it the real taxonomy?](#6-controls-is-it-the-real-taxonomy)
@@ -23,44 +25,11 @@ The code, one result file for every run, and all the charts are in this reposito
 15. [Compute and reproducibility checklist](#15-compute-and-reproducibility-checklist)
 16. [How to reproduce](#16-how-to-reproduce)
 
-## 1. Question, conditions and metrics
+## 1. The dataset: iNaturalist 2021 mini
 
-**The dataset.** The photos come from iNaturalist 2021 mini. iNaturalist is a website where volunteers photograph plants, animals and fungi, and the community names the species. Every photo in the dataset has a label: its species, and the full path of that species through the tree of life (kingdom, phylum, class, order, family, genus, species). I downloaded 2,076 species with 50 photos each, 103,800 photos in total, and the experiments use 200, 500 or all 2,076 of those species. Section 3 gives the details.
+iNaturalist is a website where volunteers photograph plants, animals and fungi, and the community names the species. The iNaturalist 2021 dataset (Van Horn et al., "Benchmarking Representation Learning for Natural World Image Collections", CVPR 2021) is a collection of these photos. Every photo has a label: its species, and the full path of that species through the tree of life (kingdom, phylum, class, order, family, genus, species). The full dataset has 10,000 species. The "Train Mini" version keeps 50 photos for each species. The photos are taken by volunteers with phones and cameras, so the light, the angle, the distance and the background change from photo to photo.
 
-**The question.** Every photo of a living thing comes with a tree of labels above it: kingdom, phylum, class, order, family, genus, species. So I wanted to know: if I also tell a small CNN where each species sits in that tree, (1) does it name the right species more often, and (2) when it is wrong, is its wrong guess at least in the right group, meaning the same class, order or family as the true species?
-
-**The two conditions.** This is the main comparison, on 200 species:
-
-- **Condition 1, baseline:** a small CNN that only predicts the species.
-- **Condition 2:** the same CNN with one extra output that predicts the order. The loss is species loss plus order loss, so the order loss also trains the shared layers.
-
-![model diagram](figures/model_diagram.png)
-
-**How I measure it.** I report top-1 and top-5 accuracy as error (1 - accuracy) on train, validation and test. I also track a second thing, which I call mistake quality: of the wrong species guesses, the share that still fall in the right class, order or family. A higher share means better mistakes. For reference, a random wrong guess among the other 199 species lands in the right order only 9/199 = 4.5% of the time.
-
-**My rule for the test set.** I picked every setting on validation. Test accuracy was printed during training, but I never used it to choose a setting.
-
-## 2. Experiments at a glance
-
-| # | Experiment | Data | Seeds | Epochs | Main finding |
-|---|---|---|---|---|---|
-| 1 | Tuning the baseline | 200 species, 64x64 | 5 | 20 or 50 | best setting: both flips, 20 epochs; 50 epochs gave no clear gain in validation accuracy |
-| 2 | **Condition 1 vs condition 2** | 200 species | 5 | 20 | order head: more wrong guesses fall in the right order (20.6% against 18.4%) |
-| 3 | Shuffled-group controls | 200 species | 5 | 20 | shuffled groups give no gain: same right-order share as the baseline (18.4%) |
-| 4 | Order head, 500 species | 500 species | 3 | 30 | same result as with 200 species: more wrong guesses fall in the right order (21.9% against 19.7%) |
-| 5 | Soft labels from the taxonomy | 200 species | 5 | 20 | a lower beta puts more wrong guesses in the right order but lowers top-1 accuracy |
-| 6 | Six architectures | 200 species | 5 | 20 | ImageNet pretraining more than doubles test accuracy; more parameters did not raise it |
-| 7 | Learning order of the levels | 200 species | 5 | 20 | accuracy at every level rises together during training, with no coarse-first stages |
-| 8 | One network per taxonomy level | 2,076 species, 32x32 | 1 to 3 | 8 to 30 | test accuracy of our CNN drops steeply from class (0.62) to order (0.28) |
-| 9 | CPU against GPU | 200 and 400 species | 1 | 15 | GPU 2 times faster, no clear accuracy difference |
-
-## 3. Data and setup
-
-### The dataset: iNaturalist 2021 mini
-
-iNaturalist is a website where volunteers photograph plants, animals and fungi and the community names the species. The iNaturalist 2021 dataset (Van Horn et al., "Benchmarking Representation Learning for Natural World Image Collections", CVPR 2021) is a collection of these photos with the species name of each one. The full dataset has 10,000 species. The "Train Mini" version keeps 50 photos for each species. The photos are taken by volunteers with phones and cameras, so the light, the angle, the distance and the background change from photo to photo.
-
-**Why I chose it for this question.** Every species comes with its full path in the tree of life, written in the name of its folder. For example, the folder `04798_Animalia_Chordata_Mammalia_Rodentia_Chinchillidae_Lagidium_viscacia` means kingdom Animalia, phylum Chordata, class Mammalia, order Rodentia, family Chinchillidae, genus Lagidium, species Lagidium viscacia. This path is the taxonomy I use: the order head, the class, order and family heads, and the soft labels are all built from it.
+**The taxonomy path.** The full path of each species is written in the name of its folder. For example, the folder `04798_Animalia_Chordata_Mammalia_Rodentia_Chinchillidae_Lagidium_viscacia` means kingdom Animalia, phylum Chordata, class Mammalia, order Rodentia, family Chinchillidae, genus Lagidium, species Lagidium viscacia. This path is the taxonomy I use: the order head, the class, order and family heads, and the soft labels are all built from it.
 
 **What I downloaded.** I did not use all 10,000 species. I downloaded part of Train Mini: **2,076 complete species, 50 photos each, 103,800 photos**. The photos I checked from one species are about 500 pixels on the longest side. These 2,076 species cover:
 
@@ -92,9 +61,38 @@ iNaturalist is a website where volunteers photograph plants, animals and fungi a
 
 **Rules I follow.** The photos belong to the iNaturalist community and the dataset is for non-commercial research. I use the photos only for this research, I did not scrape any extra photos, and I do not put any photo in the code repository, this report or the charts. Anyone who wants to repeat the experiments has to download the dataset themselves.
 
-### Model and training
+## 2. Question, conditions and metrics
 
-- **Baseline model** (diagram in section 1): three convolution blocks (32, 64, 128 filters, 3x3, ReLU, max pool), then Linear(8192, 256), ReLU, Dropout 0.5, Linear(256, 200). 2,242,056 parameters.
+**The question.** I wanted to know: if I also tell a small CNN where each species sits in the tree of labels (section 1), (1) does it name the right species more often, and (2) when it is wrong, is its wrong guess at least in the right group, meaning the same class, order or family as the true species?
+
+**The two conditions.** This is the main comparison, on 200 species:
+
+- **Condition 1, baseline:** a small CNN that only predicts the species.
+- **Condition 2:** the same CNN with one extra output that predicts the order. The loss is species loss plus order loss, so the order loss also trains the shared layers.
+
+![model diagram](figures/model_diagram.png)
+
+**How I measure it.** I report top-1 and top-5 accuracy as error (1 - accuracy) on train, validation and test. I also track a second thing, which I call mistake quality: of the wrong species guesses, the share that still fall in the right class, order or family. A higher share means better mistakes. For reference, a random wrong guess among the other 199 species lands in the right order only 9/199 = 4.5% of the time.
+
+**My rule for the test set.** I picked every setting on validation. Test accuracy was printed during training, but I never used it to choose a setting.
+
+### Experiments at a glance
+
+| # | Experiment | Data | Seeds | Epochs | Main finding |
+|---|---|---|---|---|---|
+| 1 | Tuning the baseline | 200 species, 64x64 | 5 | 20 or 50 | best setting: both flips, 20 epochs; 50 epochs gave no clear gain in validation accuracy |
+| 2 | **Condition 1 vs condition 2** | 200 species | 5 | 20 | order head: more wrong guesses fall in the right order (20.6% against 18.4%) |
+| 3 | Shuffled-group controls | 200 species | 5 | 20 | shuffled groups give no gain: same right-order share as the baseline (18.4%) |
+| 4 | Order head, 500 species | 500 species | 3 | 30 | same result as with 200 species: more wrong guesses fall in the right order (21.9% against 19.7%) |
+| 5 | Soft labels from the taxonomy | 200 species | 5 | 20 | a lower beta puts more wrong guesses in the right order but lowers top-1 accuracy |
+| 6 | Six architectures | 200 species | 5 | 20 | ImageNet pretraining more than doubles test accuracy; more parameters did not raise it |
+| 7 | Learning order of the levels | 200 species | 5 | 20 | accuracy at every level rises together during training, with no coarse-first stages |
+| 8 | One network per taxonomy level | 2,076 species, 32x32 | 1 to 3 | 8 to 30 | test accuracy of our CNN drops steeply from class (0.62) to order (0.28) |
+| 9 | CPU against GPU | 200 and 400 species | 1 | 15 | GPU 2 times faster, no clear accuracy difference |
+
+## 3. Model and training
+
+- **Baseline model** (diagram in section 2): three convolution blocks (32, 64, 128 filters, 3x3, ReLU, max pool), then Linear(8192, 256), ReLU, Dropout 0.5, Linear(256, 200). 2,242,056 parameters.
 - **Training:** pixels centred with (x - 0.5) / 0.25, NAdam, learning rate 0.0003, batch size 32, random left-right and up-down flips, cross-entropy loss.
 
 ## 4. Getting a working baseline
@@ -142,7 +140,7 @@ Now that the baseline learns and its settings are chosen, I can ask the main que
 
 Random guessing has an error of 0.995.
 
-**How I read this.** On validation, the two are identical (0.883 and 0.882). On test, condition 2 is 0.007 lower. That's about two standard deviations, and the seed ranges just touch (accuracy 0.113 to 0.119 against 0.119 to 0.128). So a test gain of 0.007 is possible, but with 5 seeds I cannot show that it is real, and validation shows no gain at all. I do not claim a gain in species accuracy.
+**How I read this.** On validation, the two are identical (0.883 and 0.882). On test, the error of condition 2 is 0.007 lower. The standard error of that difference is 0.0021, so a t-test over the 5 seeds gives t = 3.2 (p about 0.01). A test that pairs the seeds by number gives t = 3.0 (p about 0.04), although the seeds are matched by number only and are not truly paired. So the test difference is unlikely to be seed noise. But validation shows no difference at all (0.883 and 0.882), and I used one data split. So I report a small test gain of 0.007 in species accuracy, and I do not claim that the order head improves species accuracy in general.
 
 ![learning curves](figures/learning_curves.png)
 
@@ -253,7 +251,7 @@ My guess going in was that a network might learn the broad differences first and
 
 ## 11. All 2,076 species, one network per taxonomy level
 
-Everything so far used at most 500 species. For the last big experiment I wanted to see how accuracy changes as the question gets finer, so I used every photo of the 2,076 species I downloaded, at 32x32 (62,280 train, 20,760 validation, 20,760 test photos). I trained a separate network for each level, from kingdom (3 groups) all the way down to species (2,076 groups).
+Everything so far used at most 500 species. For the last big experiment I wanted to see how accuracy changes as the question gets finer, so I used the 2,076-species set (section 1). I trained a separate network for each level, from kingdom (3 groups) all the way down to species (2,076 groups).
 
 ![taxonomy levels](figures/taxonomy_levels.png)
 
@@ -299,8 +297,8 @@ One practical question came up along the way: does it matter whether I train on 
 
 ## 13. Conclusions
 
-1. **The taxonomy changes how the model is wrong, but I cannot show that it changes how often the model is wrong.** (Test error 0.877 against 0.884 is within about two standard deviations.) An order head raises the share of wrong guesses that land in the right order (18.4% to 20.6%), and class, order and family heads push it further (21.4%). The shuffled-group control gives back the baseline value, so the effect really needs the true taxonomy. It shows up again with 500 species, and again with a completely different method (soft labels).
-2. **I can't claim a species-accuracy gain from the order head.** Validation shows none. Test shows 0.007 (about two standard deviations) with 5 seeds. That's not enough.
+1. **The taxonomy changes how the model is wrong, and gives at most a small gain in how often it is right.** (Test error 0.877 against 0.884, see conclusion 2.) An order head raises the share of wrong guesses that land in the right order (18.4% to 20.6%), and class, order and family heads push it further (21.4%). The shuffled-group control gives back the baseline value, so the effect really needs the true taxonomy. It shows up again with 500 species, and again with a completely different method (soft labels).
+2. **The order head gives a small test gain in species accuracy, which I cannot confirm.** Test error is 0.877 against 0.884 (t = 3.2 over 5 seeds, p about 0.01), but validation shows no gain and I used one data split.
 3. **With a small training set, pretraining gave by far the largest gain in test accuracy** (0.291 against 0.116), much larger than any change in depth or parameter count.
 4. **The finer the question, the harder it gets.** On all 2,076 species, accuracy falls from 0.85 (kingdom) to 0.06 (species), and the steepest drop is between class and order.
 5. **All levels are learned together.** I found no coarse-first stages.

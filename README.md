@@ -23,7 +23,7 @@ Main comparison: 200 species, 64x64 photos, 20 epochs, mean over 5 seeds.
 ![train, validation and test error of the two conditions](figures/two_conditions_errors.png)
 
 - **The taxonomy changes how the model is wrong.** More of its wrong guesses land in the right order. The control with randomly assigned groups gives the baseline value (18.4%), so the effect needs the true taxonomy. It also appears with 500 species and with soft labels built from the taxonomy.
-- **I cannot show that it changes how often the model is wrong.** The test gain of 0.007 is about two standard deviations, and validation shows no gain.
+- **At most a small gain in how often it is right.** The test gain of 0.007 has t = 3.2 over 5 seeds (p about 0.01), but validation shows no gain and I used one data split.
 - **Pretraining gave the largest gain in test accuracy.** An ImageNet-pretrained ResNet-18 reaches 0.291 test top-1 against 0.116 for my baseline. More parameters trained from scratch did not raise it.
 - **The finer the question, the harder it gets.** On 2,076 species (32x32 photos, one network per level), the test accuracy of my CNN falls from 0.85 at kingdom to 0.06 at species.
 
@@ -56,7 +56,7 @@ Every run is one file in `results/`. Section 14 of the report lists the limits a
 
 ## Data
 
-The photos are not in this repository. The dataset belongs to iNaturalist and is for non-commercial research use. Download iNaturalist 2021 "Train Mini" yourself (Van Horn et al., *Benchmarking Representation Learning for Natural World Image Collections*, CVPR 2021). I used 2,076 complete species, 50 photos each. Section 3 of the report describes the dataset, the subsets and the train, validation and test split.
+The photos are not in this repository. The dataset belongs to iNaturalist and is for non-commercial research use. Download iNaturalist 2021 "Train Mini" yourself (Van Horn et al., *Benchmarking Representation Learning for Natural World Image Collections*, CVPR 2021). I used 2,076 complete species, 50 photos each. Section 1 of the report describes the dataset, the subsets and the train, validation and test split.
 
 ## Reproduce
 
