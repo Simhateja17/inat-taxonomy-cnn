@@ -50,7 +50,6 @@ Every run is one file in `results/`. Section 14 of the report lists the limits a
 |---|---|
 | `data_prep/` | scripts that build the `.npz` data files from the downloaded photos |
 | `experiments/` | training scripts: `taxo.py` (the two conditions and controls), `softloss.py` (soft labels), `arch.py` (architectures), `single_level.py` and `single_arch.py` (one network per taxonomy level), `inat_cond2.py`, `cifar_torch.py`, `torch_toy.py` |
-| `queues/` | shell scripts that ran the experiments one after another |
 | `results/` | the printed output of every run, one file per run |
 | `charts/` | scripts that make the figures from `results/`, and `summarize.py` |
 | `figures/` | the charts used in the report |

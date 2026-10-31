@@ -2,6 +2,8 @@
 
 Keep adding to this as we go. Facts and numbers only, with what was tried and what happened.
 
+The shell scripts that chained runs overnight (`queue_*.sh`, `run_overnight.sh`) are mentioned below but are not in the repository. Every run is one `python` command, listed in the README.
+
 ## Task
 The task (from Prof. Tomas Maul): build simple PyTorch models on iNat 2021 mini (micro version allowed).
 1) train and tune a baseline, 2) compare two experimental conditions, 3) summarise insights.
