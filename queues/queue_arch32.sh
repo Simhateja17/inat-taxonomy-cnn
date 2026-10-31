@@ -6,9 +6,9 @@ for pair in lenet:30 alexnet:30 resnet:20 resnet18:15 resnet18_pre:8; do
     a=${pair%%:*}
     e=${pair##*:}
     for lv in kingdom phylum class order family genus species; do
-        out=kaggle/results/all32_${a}_${lv}_s1.txt
+        out=results/all32_${a}_${lv}_s1.txt
         for attempt in 1 2 3; do
-            .venv/bin/python kaggle/single_arch.py ~/inat_data/inat_all32.npz 1 $lv $e $a > $out 2>&1
+            .venv/bin/python experiments/single_arch.py ~/inat_data/inat_all32.npz 1 $lv $e $a > $out 2>&1
             if grep -q "Insufficient Memory" $out; then
                 sleep 60
             else

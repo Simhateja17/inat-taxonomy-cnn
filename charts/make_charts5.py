@@ -20,7 +20,7 @@ def style(ax):
     ax.yaxis.grid(True,color=GRID,linewidth=0.8)
     ax.set_axisbelow(True)
 
-os.makedirs('kaggle/figures',exist_ok=True)
+os.makedirs('figures',exist_ok=True)
 
 fig,axes=plt.subplots(1,2,figsize=(10,4.2),facecolor=SURFACE,gridspec_kw={'width_ratios':[1,1.6]})
 
@@ -59,6 +59,6 @@ axes[1].legend(frameon=False,fontsize=8.5,labelcolor=INK2,loc='upper right')
 
 fig.text(0.01,0.01,'Speed: 6,000 photos at 64x64. Accuracy: seed 1, 15 epochs, 30 training photos per species, single runs.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/cpu_vs_gpu.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/cpu_vs_gpu.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 print('made 1 chart')

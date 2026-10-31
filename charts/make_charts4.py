@@ -42,7 +42,7 @@ def read_run(path):
 def cnn_runs(level):
     out=[]
     for s in range(1,4):
-        r=read_run('kaggle/results/all32_%s_s%d.txt'%(level,s))
+        r=read_run('results/all32_%s_s%d.txt'%(level,s))
         if r is not None:
             out.append(r)
     return out
@@ -50,7 +50,7 @@ def cnn_runs(level):
 def arch_runs(arch,level):
     out=[]
     for tag in ['s1','s2','s3','s2g']:
-        r=read_run('kaggle/results/all32_%s_%s_%s.txt'%(arch,level,tag))
+        r=read_run('results/all32_%s_%s_%s.txt'%(arch,level,tag))
         if r is not None:
             out.append(r)
     return out
@@ -68,7 +68,7 @@ def style(ax):
     ax.yaxis.grid(True,color=GRID,linewidth=0.8)
     ax.set_axisbelow(True)
 
-os.makedirs('kaggle/figures',exist_ok=True)
+os.makedirs('figures',exist_ok=True)
 
 archs=[('LeNet','lenet',MUTED),('AlexNet-style','alexnet',ORANGE),('small ResNet','resnet',AQUA),('ResNet-18 style','resnet18',MAGENTA),('ResNet-18 pretrained','resnet18_pre',VIOLET)]
 
@@ -150,7 +150,7 @@ def by_level(key,filename,title,cifar):
     ax.legend(frameon=False,fontsize=8,labelcolor=INK2,loc='center right',bbox_to_anchor=(1.0,0.5))
     fig.text(0.01,0.01,'All 2,076 species, 103,800 photos at 32x32, 62,280 training photos. One network per level.',fontsize=8,color=MUTED)
     fig.tight_layout(rect=(0,0.04,1,1))
-    fig.savefig('kaggle/figures/'+filename,dpi=200,facecolor=SURFACE)
+    fig.savefig('figures/'+filename,dpi=200,facecolor=SURFACE)
     plt.close(fig)
 
 by_level('test1','full32_top1_by_level.png','Accuracy as the question gets finer: kingdom to species (top-1)',True)
@@ -181,6 +181,6 @@ flat[0].legend(frameon=False,fontsize=8.5,labelcolor=INK2,loc='lower right')
 flat[7].axis('off')
 fig.text(0.01,0.01,'Our CNN, 32x32, full dataset, mean of up to 3 seeds. Train = first 5,000 training photos.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.03,1,1))
-fig.savefig('kaggle/figures/full32_curves_by_level.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/full32_curves_by_level.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 print('made 3 charts')

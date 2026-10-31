@@ -39,7 +39,7 @@ def read_file(path):
 def runs_of(prefix,cfg):
     out=[]
     for s in range(1,6):
-        r=read_file('kaggle/results/%s_%s_s%d.txt'%(prefix,cfg,s))
+        r=read_file('results/%s_%s_s%d.txt'%(prefix,cfg,s))
         if r is not None:
             out.append(r)
     return out
@@ -60,7 +60,7 @@ def style(ax,grid_axis='y'):
         ax.xaxis.grid(True,color=GRID,linewidth=0.8)
     ax.set_axisbelow(True)
 
-os.makedirs('kaggle/figures',exist_ok=True)
+os.makedirs('figures',exist_ok=True)
 
 archs=[('LeNet','lenet'),('AlexNet-\nstyle','alexnet'),('our CNN','cnn'),('small\nResNet','resnet'),('ResNet-18\nstyle','resnet18'),('ResNet-18\npretrained','resnet18_pre')]
 found=[]
@@ -95,7 +95,7 @@ ax.set_ylabel('test top-1 accuracy (200 species)',color=INK2,fontsize=9)
 ax.set_title('Bigger networks trained from scratch did not help; ImageNet pretraining more than doubled accuracy',loc='left',fontsize=10,color=INK)
 fig.text(0.01,0.01,'Dots = one seed, bar = mean of 5 seeds. Chance = 0.005. 64x64 photos, 6,000 training photos.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/architectures.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/architectures.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 
 fig,ax=plt.subplots(figsize=(8.5,4.2),facecolor=SURFACE)
@@ -120,7 +120,7 @@ ax.set_xlabel('top-1 accuracy',color=INK2,fontsize=9)
 ax.set_title('Train accuracy against test accuracy: the gap is the overfitting',loc='left',fontsize=10,color=INK)
 fig.text(0.01,0.01,'Hollow = train, filled = test. Mean of 5 seeds, 200 species, 20 epochs.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/overfitting_gap.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/overfitting_gap.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 
 points=[
@@ -153,7 +153,7 @@ ax.set_ylabel('wrong guesses in the right order (%)',color=INK2,fontsize=9)
 ax.set_title('Smarter mistakes cost little exact accuracy',loc='left',fontsize=10.5,color=INK)
 fig.text(0.01,0.01,'200 species, test set, mean and range of 5 seeds. Blue = extra taxonomy heads, orange = soft labels, gray = baseline.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/accuracy_vs_mistake_quality.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/accuracy_vs_mistake_quality.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 
 models=[('LeNet','lenet'),('our CNN','cnn'),('ResNet-18 style','resnet18'),('ResNet-18 pretrained','resnet18_pre')]
@@ -181,6 +181,6 @@ axes[0].set_ylabel('validation accuracy',color=INK2,fontsize=9)
 axes[0].legend(frameon=False,fontsize=8.5,labelcolor=INK2,loc='upper left')
 fig.text(0.01,0.01,'Group guess = group with the largest summed species probability. 200 species, mean of 5 seeds. Always guessing the biggest class would score 0.35.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/level_learning_curves.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/level_learning_curves.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 print('made 4 charts')

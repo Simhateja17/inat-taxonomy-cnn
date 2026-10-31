@@ -32,7 +32,7 @@ def dots(ax,x,vals,color,fmt='%.3f'):
     ax.plot([x-0.25,x+0.25],[mean,mean],color=INK,linewidth=2,zorder=4)
     ax.text(x+0.28,mean,fmt%mean,color=INK,fontsize=9,va='center')
 
-os.makedirs('kaggle/figures',exist_ok=True)
+os.makedirs('figures',exist_ok=True)
 
 steps=[
     ('baseline',[0.0845,0.0935,0.0855,0.0900,0.0740]),
@@ -57,7 +57,7 @@ ax.set_ylabel('validation top-1 accuracy',color=INK2,fontsize=9)
 ax.set_title('Tuning the baseline: flips helped, 50 epochs did not',loc='left',fontsize=10.5,color=INK)
 fig.text(0.01,0.01,'200 species, 64x64, 5 seeds (dots), mean (bar). Blue = the setting we kept (20 epochs, both flips).',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/tuning_steps.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/tuning_steps.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 
 fig,axes=plt.subplots(1,2,figsize=(10,4),facecolor=SURFACE)
@@ -88,13 +88,13 @@ axes[1].set_title('More species: lower accuracy, same big gap',loc='left',fontsi
 axes[1].legend(frameon=False,fontsize=8.5,labelcolor=INK2,loc='upper right')
 fig.text(0.01,0.01,'Early tests: seed 1, 15 epochs, no flips, 30 training photos per species (left: 200 species). Single runs.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/data_amount.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/data_amount.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 
 def read500(cfg):
     out=[]
     for s in range(1,4):
-        path='kaggle/results/taxo500_%s_s%d.txt'%(cfg,s)
+        path='results/taxo500_%s_s%d.txt'%(cfg,s)
         if not os.path.exists(path):
             continue
         r={}
@@ -135,6 +135,6 @@ for ax,(key,title,fmt) in zip(axes,panels):
     ax.set_title(title,loc='left',fontsize=10,color=INK)
 fig.text(0.01,0.01,'500 species, test set, 30 epochs, 3 seeds (dots), mean (bar). Chance top-1 = 0.002.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/species_500.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/species_500.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 print('made 3 charts')

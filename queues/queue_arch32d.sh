@@ -5,9 +5,9 @@ run() {
     e=$3
     lv=$4
     suffix=$5
-    out=kaggle/results/all32_${a}_${lv}_s${seed}${suffix}.txt
+    out=results/all32_${a}_${lv}_s${seed}${suffix}.txt
     for attempt in 1 2 3; do
-        .venv/bin/python kaggle/single_arch.py ~/inat_data/inat_all32.npz $seed $lv $e $a > $out 2>&1
+        .venv/bin/python experiments/single_arch.py ~/inat_data/inat_all32.npz $seed $lv $e $a > $out 2>&1
         if grep -q "Insufficient Memory" $out; then
             sleep 60
         else

@@ -16,7 +16,7 @@ for cfg in cfgs:
     print('==',cfg)
     rows=[]
     for s in range(1,n_seeds+1):
-        f='kaggle/results/%s_%s_s%d.txt'%(prefix,cfg,s)
+        f='results/%s_%s_s%d.txt'%(prefix,cfg,s)
         try:
             lines=open(f).read().split('\n')
         except Exception:

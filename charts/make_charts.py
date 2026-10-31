@@ -12,7 +12,7 @@ BLUE='#2a78d6'
 ORANGE='#eb6834'
 
 def read_run(prefix,cfg,seed):
-    f='kaggle/results/%s_%s_s%d.txt'%(prefix,cfg,seed)
+    f='results/%s_%s_s%d.txt'%(prefix,cfg,seed)
     if not os.path.exists(f):
         return None
     r={'epochs':[]}
@@ -40,7 +40,7 @@ def style(ax):
     ax.yaxis.grid(True,color=GRID,linewidth=0.8)
     ax.set_axisbelow(True)
 
-os.makedirs('kaggle/figures',exist_ok=True)
+os.makedirs('figures',exist_ok=True)
 
 conditions=[
     ('baseline','none','base'),
@@ -92,7 +92,7 @@ for ax,(key,title) in zip(axes,panels):
     ax.set_title(title,loc='left',fontsize=10.5,color=INK)
 fig.text(0.01,0.01,'Test set, 200 species, 20 epochs, 5 seeds per condition. Dots = one seed, bar = mean. Hollow = shuffled control.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/right_group_share.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/right_group_share.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 
 fig,ax=plt.subplots(figsize=(7,4.2),facecolor=SURFACE)
@@ -125,6 +125,6 @@ ax.set_title('Training keeps climbing, test accuracy flattens near 0.12',loc='le
 ax.legend(frameon=False,fontsize=8.5,labelcolor=INK2,loc='upper left')
 fig.text(0.01,0.01,'200 species, both flips, mean of 5 seeds. Train accuracy is measured on 2,000 training photos.',fontsize=8,color=MUTED)
 fig.tight_layout(rect=(0,0.04,1,1))
-fig.savefig('kaggle/figures/learning_curves.png',dpi=200,facecolor=SURFACE)
+fig.savefig('figures/learning_curves.png',dpi=200,facecolor=SURFACE)
 plt.close(fig)
 print('found conditions:',len(found))
