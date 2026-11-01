@@ -339,7 +339,7 @@ Full details are in `NOTES.md`.
 |---|---|
 | Hardware | MacBook with Apple M5 and 16 GB shared memory, PyTorch 2.8.0 (Apple GPU backend "mps"), torchvision 0.23.0, Python 3.9 |
 | Time | about 4 s per epoch on 6,000 photos at 64x64; about 8 s per epoch for our CNN on the full 32x32 set. One full-set level took about 7 minutes (small ResNet), 17 (ResNet-18 style), 19 (AlexNet-style), 11 (pretrained ResNet-18) |
-| Runs | 165 result files, one per run, in `results/` |
+| Runs | 156 result files, one per run, in `results/`, named experiment_setting_seed (for example `taxo200_order_s1.txt` is the order head on 200 species, seed 1): `taxo200` 25, `taxo500` 9, `soft200` 15, `arch200` 30, `all32` 77 |
 | Seeds | fixed per run; the same seed gives identical output (checked) |
 | Number of seeds | stated for every table and chart |
 | Reported statistic | mean over seeds, with standard deviation or range, never the best seed |
